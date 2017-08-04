@@ -1,0 +1,33 @@
+{
+    "tags": {
+        "allowUnknownTags": false
+    },
+    "source": {
+        "include": ["app/components", "app/containers", "app/utils"],
+        "includePattern": ".js$",
+        "excludePattern": "(node_modules/|docs)"
+    },
+    "plugins": [
+				"node_modules/jsdoc-babel"
+    ],
+		"babel": {
+        "presets": ["es2015", "react", "stage-0"],
+        "plugins": ["transform-flow-strip-types"]
+    },
+    "opts": {
+        "template": "node_modules/docdash",
+        "encoding": "utf8",
+        "destination": "docs/",
+        "recurse": true,
+        "verbose": true
+    },
+    "templates": {
+        "default": {
+          "staticFiles": {
+            "paths": ["old_docs/test"]
+          }
+        },
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}

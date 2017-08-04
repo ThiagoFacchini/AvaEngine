@@ -1,0 +1,31 @@
+/* IMPORTANT - YOU HAVE TO SAVE THE COMPONENT, CONTAINER OR VIEW CSS FILE */
+/* IN ORDER TO THE PRE-COMPILLER MERGE THE THEME STYLING */
+
+/* Variables goes inside root, classes definition inside .standard */
+:root {
+	--tablet-standard-text-colour: #FFF;
+}
+
+
+/* DEVICE: TABLET */
+.standard.tablet {
+	&.homepage {
+		background-color: #EEE;
+
+		& .welcomeMessage {
+			background-color: #019875;
+		}
+
+		& .title {
+			color: var(--tablet-standard-text-colour);
+			font-family: RobotoMedium;
+			font-size: 50px;
+		}
+
+		& .subtitle {
+			color: var(--tablet-standard-text-colour);
+			font-family: RobotoLight;
+			font-size: 25px;
+		}
+	}
+}

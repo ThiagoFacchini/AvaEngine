@@ -1,0 +1,131 @@
+// @flow
+/*
+ *
+ * {{properCase name }}
+ *
+ */
+
+// --------------------------------------------------------
+// REACT / REDUX IMPORTS
+// --------------------------------------------------------
+import React from 'react'
+import { connect } from 'react-redux'
+import { createStructuredSelector } from 'reselect'
+import makeSelect{{properCase name}} from './selectors'
+
+import {
+	selectTheme,
+	selectBrowsingDevice,
+} from './../../structural/App/selectors'
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+// INTERNATIONALISATION SUPPORT
+// --------------------------------------------------------
+import { injectIntl } from 'react-intl'
+import messages from './messages'
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+// STYLING IMPORTS
+// --------------------------------------------------------
+import classNames from 'classnames'
+import styles from './styles.css'
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+// COMPONENT / CONTAINER IMPORTS
+// --------------------------------------------------------
+import Helmet from 'react-helmet'
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+// COMPONENT PROPERTIES DEFINITION
+// --------------------------------------------------------
+type PropTypes = {}
+// --------------------------------------------------------
+
+// --------------------------------------------------------
+// DEFINES COMPONENT DEFAULT PROPERTIES
+// --------------------------------------------------------
+const _defaultProps = {}
+// --------------------------------------------------------
+
+export class {{ properCase name }} extends React.Component {
+	propTypes: PropTypes
+
+	static defaultProps: PropTypes
+	// --------------------------------------------------------
+	// COMPONENT STATE DEFINITION
+	// --------------------------------------------------------
+	state: {}
+	// --------------------------------------------------------
+
+	// --------------------------------------------------------
+	// DECLARATION FOR HELPER FUNCTIONS
+	// --------------------------------------------------------
+	// --------------------------------------------------------
+
+	// --------------------------------------------------------
+	// HELPER FUNCTIONS
+	// --------------------------------------------------------
+	// --------------------------------------------------------
+
+	// --------------------------------------------------------
+	// REACT CONSTRUCTOR
+	// --------------------------------------------------------
+	constructor (props: Object) {
+		super(props)
+
+		this.state = {}
+	}
+	// --------------------------------------------------------
+
+	// --------------------------------------------------------
+	// REACT LIFE CYCLES
+	// --------------------------------------------------------
+	componentWillMount () {}
+
+	render () {
+		return (
+			<div className={{curly true}}classNames(styles.{{ lowerCase name }}){{curly}}>
+				<Helmet
+					title="{{properCase name}}"
+					meta={{curly true}}[ {{curly true}} name: 'description', content: 'Description of {{properCase name}}' {{curly}} ]{{curly}}
+				/>
+			</div>
+		)
+	}
+
+	componentDidMount () {}
+	// --------------------------------------------------------
+}
+
+// --------------------------------------------------------
+// ACTIONS MAP
+// --------------------------------------------------------
+function mapDispatchToProps (dispatch) {
+	return {
+		actions: {
+			dispatch,
+		}
+	}
+}
+
+// --------------------------------------------------------
+// SELECTORS MAP
+// --------------------------------------------------------
+const mapStateToProps = createStructuredSelector({
+	{{name}}: makeSelect{{properCase name}}(),
+	selectorTheme: selectTheme(),
+	selectorBrowsingDevice: selectBrowsingDevice(),
+})
+
+// --------------------------------------------------------
+// SETTING CONTAINER.DEFAULTPROPS
+// --------------------------------------------------------
+{{properCase name}}.defaultProps = _defaultProps
+// --------------------------------------------------------
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl({{ properCase name }}))

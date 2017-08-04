@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- The first thing in any HTML file should be the charset -->
+    <meta charset="utf-8">
+    <!-- Make the page mobile compatible -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Allow installing the app to the homescreen -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>3DUX Framework</title>
+  </head>
+  <body>
+    <!-- Display a message if JS has been disabled on the browser. -->
+    <noscript>If you're seeing this message, that means <strong>JavaScript has been disabled on your browser</strong>, please <strong>enable JS</strong> to make this app work.</noscript>
+
+    <!-- The app hooks into this div -->
+    <div id="app"></div>
+    <!--  Loading the server configuration details -->
+    <!--  Data inside this configuration should be consumed by the API layer -->
+    <script type="text/javascript" src="./serverConfig.js"></script>
+    <!--  Appending serverConfig file into the window.serverConfig -->
+    <script type="text/javascript">
+      window.serverConfig = serverConfig
+    </script>
+  </body>
+</html>

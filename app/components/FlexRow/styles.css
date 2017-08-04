@@ -1,0 +1,40 @@
+@custom-media --extra-small (width < 576px);
+@custom-media --small (width >= 576px) and (width <768px);
+@custom-media --medium (width >= 768px) and (width <992px);
+@custom-media --large (width >= 992px) and (width <1200px);
+@custom-media --extra-large (width >= 1200px);
+
+.flexrow {
+	display: flex;
+	flex-wrap: wrap;
+
+	@media (--extra-small) {
+		&.xs {
+			display: none;
+		}
+	}
+
+	@media (--small) {
+		&.sm {
+			display: none;
+		}
+	}
+
+	@media (--medium) {
+		&.md {
+			display: none;
+		}
+	}
+
+	@media (--large) {
+		&.lg {
+			display: none;
+		}
+	}
+
+	@media (--extra-large) {
+		&.xl {
+			display: none;
+		}
+	}
+}

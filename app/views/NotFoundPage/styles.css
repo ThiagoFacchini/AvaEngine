@@ -1,0 +1,9 @@
+@import '../../styles/themesManager.css';
+
+.notfoundpage {
+	& .welcomeMessage {
+		font-family: Roboto;
+		font-size: 20px;
+		width: 100%;
+	}
+}

@@ -1,0 +1,32 @@
+@import './standard.tablet.css';
+@import './standard.mobile.css';
+/* IMPORTANT - YOU HAVE TO SAVE THE COMPONENT, CONTAINER OR VIEW CSS FILE */
+/* IN ORDER TO THE PRE-COMPILLER MERGE THE THEME STYLING */
+
+/* Variables goes inside root, classes definition inside .standard */
+:root {
+	--computer-standard-text-colour: #666;
+}
+
+/* DEVICE: COMPUTER */
+.standard.computer {
+	&.homepage {
+		background-color: #EEE;
+
+		& .welcomeMessage {
+			background-color: white;
+		}
+
+		& .title {
+			color: var(--computer-standard-text-colour);
+			font-family: RobotoMedium;
+			font-size: 30px;
+		}
+
+		& .subtitle {
+			color: var(--computer-standard-text-colour);
+			font-family: RobotoLight;
+			font-size: 16px;
+		}
+	}
+}

@@ -1,0 +1,31 @@
+/* IMPORTANT - YOU HAVE TO SAVE THE COMPONENT, CONTAINER OR VIEW CSS FILE */
+/* IN ORDER TO THE PRE-COMPILLER MERGE THE THEME STYLING */
+
+/* Variables goes inside root, classes definition inside .standard */
+:root {
+	--mobile-standard-text-colour: #FFF;
+}
+
+
+/* DEVICE: MOBILE */
+.standard.mobile {
+	&.homepage {
+		background-color: #EEE;
+
+		& .welcomeMessage {
+			background-color: #999;
+		}
+
+		& .title {
+			color: var(--mobile-standard-text-colour);
+			font-family: RobotoMedium;
+			font-size: 30px;
+		}
+
+		& .subtitle {
+			color: var(--mobile-standard-text-colour);
+			font-family: RobotoLight;
+			font-size: 18px;
+		}
+	}
+}
