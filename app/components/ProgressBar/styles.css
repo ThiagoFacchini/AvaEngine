@@ -1,0 +1,69 @@
+@import '../../styles/themesManager.css';
+
+.progressbar {
+	position: absolute;
+	display: block;
+	border-image: url(./assets/progressBar.png) 23 6 stretch;
+	border-image-slice: 6 6 6 6 fill;
+	border-image-width: 6px 6px 6px 6px;
+	border-image-outset: 0 0 0 0;
+	height: 29px;
+	max-height: 29px;
+	min-height: 29px;
+	font-family: Georgia;
+	font-size: 14px;
+	padding-top: 5px;
+	cursor: default;
+	user-select: none;
+	color: #F2DFC7;
+	width: 500px;
+	overflow: hidden;
+
+	& .valTop {
+		position: absolute;
+		top: 7px;
+		left: 7px;
+		min-height: 8px;
+		max-height: 8px;
+		height: 8px;
+		z-index: 0;
+	}
+
+	& .valBottom {
+		position: absolute;
+		bottom: 7px;
+		left: 7px;
+		min-height: 7px;
+		max-height: 7px;
+		height: 7px;
+		z-index: 0;
+	}
+
+	& .label {
+		font-family: Georgia;
+		font-size: 10px;
+		position: absolute;
+		z-index: 2;
+		top: 6px;
+		width: 100%;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	& .markersWrapper {
+		position: absolute;
+		z-index: 1;
+		top: 7px;
+		width: 100%;
+		height: 17px;
+		overflow: hidden;
+
+		& .marker {
+			position: absolute;
+			width: 1px;
+			height: 17px;
+			background-image: url(./assets/marker.png);
+			top: 0;
+		}
+	}
+}

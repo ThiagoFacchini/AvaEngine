@@ -1,0 +1,36 @@
+@import '../../styles/themesManager.css';
+
+.label {
+	height: 30px;
+	max-height: 30px;
+	min-height: 30px;
+	display: inline-block;
+	font-family: Georgia;
+	cursor: default;
+	user-select: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+
+	&.square {
+		border-image: url(./assets/squaredBase.png) 26 4 stretch;
+		border-image-slice: 4 4 4 4 fill;
+		border-image-width: 4px 4px 4px 4px;
+		border-image-outset: 0 0 0 0;
+		padding-left: 15px;
+		padding-right: 15px;
+		font-size: 14px;
+		padding-top: 5px;
+	}
+
+	&.trapezoid {
+		border-image: url(./assets/trapezoidBase.png) 4 16 6 16 stretch;
+		border-image-slice: 4 16 4 16 fill;
+		border-image-width: 4px 16px 6px 16px;
+		border-image-outset: 0 0 0 0;
+		padding-left: 26px;
+		padding-right: 26px;
+		font-size: 12px;
+		padding-top: 4px;
+	}
+}

@@ -24,9 +24,14 @@ import {
 	selectBrowsingDevice,
 } from './../../structural/App/selectors'
 
-import FlexRow from './../../components/FlexRow'
-import FlexCol from './../../components/FlexCol'
-import FlexGlyph from './../../components/FlexGlyph'
+import FlexRow from './../../components/FlexUI/FlexRow'
+import FlexCol from './../../components/FlexUI/FlexCol'
+import FlexGlyph from './../../components/FlexUI/FlexGlyph'
+
+import MultiUsageProgressBar from './../../containers/MultiUsageProgressBar'
+import Label from './../../components/Label'
+import IconHolder from './../../components/IconHolder'
+import ProgressBar from './../../components/ProgressBar'
 
 // --------------------------------------------------------
 
@@ -43,7 +48,7 @@ import messages from './messages'
 import classNames from 'classnames'
 import styles from './styles.css'
 
-import { images } from './../../styles/assets'
+import assets from './../../styles/assets'
 // --------------------------------------------------------
 
 // --------------------------------------------------------
@@ -79,17 +84,6 @@ export class HomePage extends React.Component {
 	// --------------------------------------------------------
 	// HELPER FUNCTIONS
 	// --------------------------------------------------------
-	_getBrowsingDevice () {
-		switch (this.props.selectorBrowsingDevice) {
-		case 'tablet':
-			return images.tabletScreen
-		case 'mobile':
-			return images.mobileScreen
-		default:
-			return images.computerScreen
-		}
-	}
-
 	_setFavouriteColour () {
 		this.props.actions.setFavouriteColour('blue')
 	}
@@ -101,7 +95,6 @@ export class HomePage extends React.Component {
 	constructor (props: Object) {
 		super(props)
 
-		this._getBrowsingDevice = this._getBrowsingDevice.bind(this)
 		this._setFavouriteColour = this._setFavouriteColour.bind(this)
 	}
 	// --------------------------------------------------------
@@ -110,6 +103,7 @@ export class HomePage extends React.Component {
 	// REACT LIFE CYCLES
 	// --------------------------------------------------------
 	componentWillMount () {}
+
 	render () {
 		return (
       <div className={classNames(styles.homepage, styles[this.props.selectorTheme], styles[this.props.selectorBrowsingDevice])}>
@@ -117,49 +111,31 @@ export class HomePage extends React.Component {
           title="HomePage"
           meta={[ { name: 'description', content: 'Description of HomePage' } ]}
         />
-				<div className={classNames(styles.welcomeMessage)}>
-					<img src={this._getBrowsingDevice()}/>
-					<div className={classNames(styles.title)} onClick={ this._setFavouriteColour }>
-						Welcome!!!<br/>
-					</div>
-					<div className={classNames(styles.subtitle)}>
-						This is the HomePage stylised by { this.props.selectorTheme } theme.<br/><br/>
-						You are browsing this page using a { this.props.selectorBrowsingDevice }
-						<br/>
-						{ this.props.selectFavouriteColour }
-					</div>
-					<FlexRow
-						class={styles.rowClass}
-						offset={10}
-					>
-						<FlexCol xs='20' sm='10' md='6' lg='5' xl='4' inset={10}>
-							Mobile
-						</FlexCol>
-						<FlexCol xs='hidden' sm='10' md='7' lg='5' xl='4' inset={10}>
-							Big Mobile
-						</FlexCol>
-						<FlexCol xs='hidden' sm='hidden' md='7' lg='5' xl='4' inset={10}>
-							Tablet
-						</FlexCol>
-						<FlexCol xs='hidden' sm='hidden' md='hidden' lg='5' xl='4' inset={10}>
-							Screen
-						</FlexCol>
-						<FlexCol xs='hidden' sm='hidden' md='hidden' lg='hidden' xl='4' inset={10}>
-							Big Screen
-						</FlexCol>
-					</FlexRow>
+				<Label
+					type='square'
+					label='&nbsp;&nbsp;My enchanted left nut'
+					maxWidth={170}
+				/>
 
-					<FlexRow
-						xs='hidden'
-						sm='hidden'
-						md='hidden'
-						lg='hidden'
-					>
-						<FlexCol>
-							<FlexGlyph name='home2'/>
-						</FlexCol>
-					</FlexRow>
-				</div>
+				<IconHolder
+					icon={assets.images.icons.yellowFire}
+				/>
+				<ProgressBar
+					width={800}
+					maxVal={200}
+					val={100}
+					barColour='#0a0ac8'
+					label={true}
+					labelMode='percentage'
+					labelColour='#ffffff'
+					labelAlignment='center'
+					progressMarkers={true}
+					progressMarkersMode='percentage'
+					progressMarkersStep={12.5}
+				/>
+				<br/><br/><br/>
+				{/* <MultiUsageProgressBar
+				/> */}
       </div>
 		)
 	}

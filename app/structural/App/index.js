@@ -30,6 +30,7 @@ import styles from './styles.css'
 
 // The all fonts became available globally
 import '../../styles/fonts/roboto/roboto.css'
+import '../../styles/fonts/georgia/georgia.css'
 // --------------------------------------------------------
 
 // --------------------------------------------------------

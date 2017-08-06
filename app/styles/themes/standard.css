@@ -11,22 +11,5 @@
 /* DEVICE: COMPUTER */
 .standard.computer {
 	&.homepage {
-		background-color: #EEE;
-
-		& .welcomeMessage {
-			background-color: white;
-		}
-
-		& .title {
-			color: var(--computer-standard-text-colour);
-			font-family: RobotoMedium;
-			font-size: 30px;
-		}
-
-		& .subtitle {
-			color: var(--computer-standard-text-colour);
-			font-family: RobotoLight;
-			font-size: 16px;
-		}
 	}
 }
