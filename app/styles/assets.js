@@ -1,10 +1,10 @@
 // @flow
-import _iconSmallYellowFile from './assets/imgs/icon_small_yellowFire.png'
+import _iconYellowFire from './assets/imgs/yellowFire.png'
 
 const assets = {
 	images: {
 		icons: {
-			yellowFire: _iconSmallYellowFile
+			yellowFire: _iconYellowFire
 		}
 	}
 }

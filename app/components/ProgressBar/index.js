@@ -27,6 +27,7 @@ type PropTypes = {
 	width?: number,
 	maxVal: number,
 	val: number,
+	size?: 'sm' | 'md' | 'lg',
 	barColour?: string,
 	label?: boolean,
 	labelMode?: 'percentage' | 'value',
@@ -45,6 +46,7 @@ const _defaultProps = {
 	width: 100,
 	maxVal: null,
 	val: null,
+	size: 'sm',
 	barColour: '#ffe328',
 	label: true,
 	labelMode: 'percentage',
@@ -61,6 +63,16 @@ function ProgressBar (props: PropTypes) {
 	// HELPER FUNCTIONS & VARIABLES
 	// --------------------------------------------------------
 	const _componentBorder = 6
+
+	function _getProgressBarClasses () {
+		if (props.size === 'sm') {
+			return styles.sm
+		} else if (props.size === 'md') {
+			return styles.md
+		} else if (props.size === 'lg') {
+			return styles.lg
+		}
+	}
 
 	function _getProgressBarStyles () {
 		const pbStyle = {}
@@ -239,7 +251,7 @@ function ProgressBar (props: PropTypes) {
 	// REACT RETURN FUNCTION
 	// --------------------------------------------------------
 	return (
-		<div className={classNames(styles.progressbar)} style={_getProgressBarStyles()}>
+		<div className={classNames(styles.progressbar, _getProgressBarClasses())} style={_getProgressBarStyles()}>
 			<div
 				className={classNames(styles.valTop)}
 				style={_renderProgressBarCurrentVal('top')}

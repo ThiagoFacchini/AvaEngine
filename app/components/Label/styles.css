@@ -1,9 +1,6 @@
 @import '../../styles/themesManager.css';
 
 .label {
-	height: 30px;
-	max-height: 30px;
-	min-height: 30px;
 	display: inline-block;
 	font-family: Georgia;
 	cursor: default;
@@ -19,8 +16,6 @@
 		border-image-outset: 0 0 0 0;
 		padding-left: 15px;
 		padding-right: 15px;
-		font-size: 14px;
-		padding-top: 5px;
 	}
 
 	&.trapezoid {
@@ -30,7 +25,53 @@
 		border-image-outset: 0 0 0 0;
 		padding-left: 26px;
 		padding-right: 26px;
+	}
+
+	&.sm {
+		height: 30px;
+		max-height: 30px;
+		min-height: 30px;
+	}
+
+	&.sm.square {
+		font-size: 14px;
+		padding-top: 5px;
+	}
+
+	&.sm.trapezoid {
 		font-size: 12px;
 		padding-top: 4px;
+	}
+
+	&.md {
+		height: 40px;
+		max-height: 40px;
+		min-height: 40px;
+	}
+
+	&.md.square {
+		font-size: 18px;
+		padding-top: 5px;
+	}
+
+	&.md.trapezoid {
+		font-size: 16px;
+		padding-top: 5px;
+	}
+
+	&.lg {
+		height: 50px;
+		max-height: 50px;
+		min-height: 50px;
+	}
+
+	&.lg.square {
+		font-size: 23px;
+		padding-top: 6px;
+	}
+
+	&.lg.trapezoid {
+		font-size: 21px;
+		padding-top: 6px;
 	}
 }

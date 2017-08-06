@@ -17,16 +17,13 @@ import React from 'react'
 // --------------------------------------------------------
 import classNames from 'classnames'
 import styles from './styles.css'
-
-import upperShine from './assets/shine_up.png'
-import bottomShine from './assets/shine_down.png'
-import defaultIcon from './assets/default_icon.png'
 // --------------------------------------------------------
 
 // --------------------------------------------------------
 // COMPONENT PROPERTIES DEFINITION
 // --------------------------------------------------------
 type PropTypes = {
+	size?: 'sm' | 'md' | 'lg',
 	icon: string
 }
 // --------------------------------------------------------
@@ -35,6 +32,7 @@ type PropTypes = {
 // DEFINES COMPONENT DEFAULT PROPERTIES
 // --------------------------------------------------------
 const _defaultProps = {
+	size: 'sm',
 	icon: null
 }
 // --------------------------------------------------------
@@ -43,11 +41,13 @@ function IconHolder (props: PropTypes) {
 	// --------------------------------------------------------
 	// HELPER FUNCTIONS & VARIABLES
 	// --------------------------------------------------------
-	function _getIconSource () {
-		if (props.icon) {
-			return props.icon
-		} else {
-			return defaultIcon
+	function _getIconHolderClasses () {
+		if (props.size === 'sm') {
+			return styles.sm
+		} else if (props.size === 'md') {
+			return styles.md
+		} else if (props.size === 'lg') {
+			return styles.lg
 		}
 	}
 	// --------------------------------------------------------
@@ -56,10 +56,9 @@ function IconHolder (props: PropTypes) {
 	// REACT RETURN FUNCTION
 	// --------------------------------------------------------
 	return (
-		<div className={classNames(styles.iconholder)}>
-			<img src={upperShine} className={classNames(styles.upperShine)} />
-			<img src={bottomShine} className={classNames(styles.bottomShine)} />
-			<img src={_getIconSource()} className={classNames(styles.icon)} />
+		<div className={classNames(styles.iconholder, _getIconHolderClasses())}>
+			<div className={classNames(styles.shine)} />
+			<img src={props.icon} className={classNames(styles.icon)} />
 		</div>
 	)
 	// --------------------------------------------------------

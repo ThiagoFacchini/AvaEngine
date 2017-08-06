@@ -24,10 +24,6 @@ import {
 	selectBrowsingDevice,
 } from './../../structural/App/selectors'
 
-import FlexRow from './../../components/FlexUI/FlexRow'
-import FlexCol from './../../components/FlexUI/FlexCol'
-import FlexGlyph from './../../components/FlexUI/FlexGlyph'
-
 import MultiUsageProgressBar from './../../containers/MultiUsageProgressBar'
 import Label from './../../components/Label'
 import IconHolder from './../../components/IconHolder'
@@ -38,7 +34,7 @@ import ProgressBar from './../../components/ProgressBar'
 // --------------------------------------------------------
 // INTERNATIONALISATION SUPPORT
 // --------------------------------------------------------
-import { FormattedMessage, injectIntl } from 'react-intl'
+import { injectIntl } from 'react-intl'
 import messages from './messages'
 // --------------------------------------------------------
 
@@ -112,18 +108,22 @@ export class HomePage extends React.Component {
           meta={[ { name: 'description', content: 'Description of HomePage' } ]}
         />
 				<Label
+					size='sm'
 					type='square'
 					label='&nbsp;&nbsp;My enchanted left nut'
 					maxWidth={170}
 				/>
 
 				<IconHolder
+					size='lg'
 					icon={assets.images.icons.yellowFire}
 				/>
+
 				<ProgressBar
 					width={800}
 					maxVal={200}
 					val={100}
+					size='md'
 					barColour='#0a0ac8'
 					label={true}
 					labelMode='percentage'

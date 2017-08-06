@@ -7,9 +7,6 @@
 	border-image-slice: 6 6 6 6 fill;
 	border-image-width: 6px 6px 6px 6px;
 	border-image-outset: 0 0 0 0;
-	height: 29px;
-	max-height: 29px;
-	min-height: 29px;
 	font-family: Georgia;
 	font-size: 14px;
 	padding-top: 5px;
@@ -23,9 +20,6 @@
 		position: absolute;
 		top: 7px;
 		left: 7px;
-		min-height: 8px;
-		max-height: 8px;
-		height: 8px;
 		z-index: 0;
 	}
 
@@ -33,21 +27,7 @@
 		position: absolute;
 		bottom: 7px;
 		left: 7px;
-		min-height: 7px;
-		max-height: 7px;
-		height: 7px;
 		z-index: 0;
-	}
-
-	& .label {
-		font-family: Georgia;
-		font-size: 10px;
-		position: absolute;
-		z-index: 2;
-		top: 6px;
-		width: 100%;
-		padding-left: 10px;
-		padding-right: 10px;
 	}
 
 	& .markersWrapper {
@@ -55,15 +35,105 @@
 		z-index: 1;
 		top: 7px;
 		width: 100%;
-		height: 17px;
 		overflow: hidden;
 
 		& .marker {
 			position: absolute;
 			width: 1px;
-			height: 17px;
+			height: 41px;
 			background-image: url(./assets/marker.png);
+			background-repeat: repeat-y;
 			top: 0;
+		}
+	}
+
+	& .label {
+		font-family: Georgia;
+		position: absolute;
+		width: 100%;
+		z-index: 2;
+		padding-right: 10px;
+		padding-left: 10px;
+	}
+
+	&.sm {
+		height: 29px;
+		max-height: 29px;
+		min-height: 29px;
+
+		& .valTop {
+			min-height: 8px;
+			max-height: 8px;
+			height: 8px;
+		}
+
+		& .valBottom {
+			min-height: 7px;
+			max-height: 7px;
+			height: 7px;
+		}
+
+		& .markersWrapper {
+			height: 16px;
+		}
+
+		& .label {
+			top: 6px;
+			font-size: 10px;
+		}
+	}
+
+	&.md {
+		height: 39px;
+		max-height: 39px;
+		min-height: 39px;
+
+		& .valTop {
+			min-height: 13px;
+			max-height: 13px;
+			height: 13px;
+		}
+
+		& .valBottom {
+			min-height: 12px;
+			max-height: 12px;
+			height: 12px;
+		}
+
+		& .markersWrapper {
+			height: 26px;
+		}
+
+		& .label {
+			top: 9px;
+			font-size: 13px;
+		}
+	}
+
+	&.lg {
+		height: 54px;
+		max-height: 54px;
+		min-height: 54px;
+
+		& .valTop {
+			min-height: 20px;
+			max-height: 20px;
+			height: 20px;
+		}
+
+		& .valBottom {
+			min-height: 20px;
+			max-height: 20px;
+			height: 20px;
+		}
+
+		& .markersWrapper {
+			height: 41px;
+		}
+
+		& .label {
+			top: 12px;
+			font-size: 18px;
 		}
 	}
 }
