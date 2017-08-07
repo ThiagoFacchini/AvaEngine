@@ -1,0 +1,9 @@
+@import '../../styles/themesManager.css';
+
+.canvasrenderer {
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+	background-color: #000;
+}

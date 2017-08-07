@@ -24,10 +24,10 @@ import {
 	selectBrowsingDevice,
 } from './../../structural/App/selectors'
 
-import MultiUsageProgressBar from './../../containers/MultiUsageProgressBar'
 import Label from './../../components/Label'
 import IconHolder from './../../components/IconHolder'
 import ProgressBar from './../../components/ProgressBar'
+import CanvasRenderer from './../../components/CanvasRenderer'
 
 // --------------------------------------------------------
 
@@ -75,6 +75,8 @@ export class HomePage extends React.Component {
 	// --------------------------------------------------------
 	_getBrowsingDevice: Function
 	_setFavouriteColour: Function
+
+	_genRandomMap: Function
 	// --------------------------------------------------------
 
 	// --------------------------------------------------------
@@ -82,6 +84,33 @@ export class HomePage extends React.Component {
 	// --------------------------------------------------------
 	_setFavouriteColour () {
 		this.props.actions.setFavouriteColour('blue')
+	}
+
+	_genRandomMap (rows: number, cols: number) {
+		function generateRnd () {
+			const tileMaterial = Math.floor(Math.random() * (4 - 0) + 1)
+
+			switch (tileMaterial) {
+			case 1:
+				return 'grass'
+			case 2:
+				return 'sand'
+			case 3:
+				return 'dirt'
+			case 4:
+				return 'gravel'
+			}
+		}
+		const tileMap = []
+
+		for (let currentRow = 0; currentRow < rows; currentRow++) {
+			tileMap[currentRow] = []
+			for (let currentCol = 0; currentCol < cols; currentCol++) {
+				tileMap[currentRow][currentCol] = generateRnd()
+			}
+		}
+
+		return tileMap
 	}
 	// --------------------------------------------------------
 
@@ -103,7 +132,7 @@ export class HomePage extends React.Component {
 	render () {
 		return (
       <div className={classNames(styles.homepage, styles[this.props.selectorTheme], styles[this.props.selectorBrowsingDevice])}>
-        <Helmet
+        {/* <Helmet
           title="HomePage"
           meta={[ { name: 'description', content: 'Description of HomePage' } ]}
         />
@@ -132,11 +161,17 @@ export class HomePage extends React.Component {
 					progressMarkers={true}
 					progressMarkersMode='percentage'
 					progressMarkersStep={12.5}
-				/>
-				<br/><br/><br/>
-				{/* <MultiUsageProgressBar
 				/> */}
-      </div>
+
+				<CanvasRenderer
+					width={500}
+					height={500}
+					groundMapLayer={this._genRandomMap(5, 4)}
+					groundAssets={assets.images.tiles}
+					centerX={1}
+					centerY={1}
+				/>
+			</div>
 		)
 	}
 

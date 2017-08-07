@@ -2,9 +2,9 @@
 // import React from 'react';
 // import { shallow } from 'enzyme';
 
-// import { MultiUsageProgressBar } from '../index';
+// import CanvasRenderer from '../index';
 
-describe('<MultiUsageProgressBar />', () => {
+describe('<CanvasRenderer />', () => {
   it('Expect to have unit tests specified', () => {
     expect(true).toEqual(false);
   });
