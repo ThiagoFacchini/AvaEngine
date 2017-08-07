@@ -4,12 +4,16 @@
 // CanvasRenderer
 //
 //
+// TODO
+// - Logger library ( with colours )
+// - Draw coordinates on top of the canvas ( boolean )
+// - Add map size property ( rows & cols )
 
 // --------------------------------------------------------
 // REACT / REDUX IMPORTS
 // --------------------------------------------------------
 import React from 'react'
-import { cacheAssets, doCache } from './../../utils/assetsLoader'
+import { cacheAssets } from './../../utils/assetsLoader'
 // --------------------------------------------------------
 
 // --------------------------------------------------------
