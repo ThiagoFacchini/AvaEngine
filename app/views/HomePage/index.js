@@ -11,13 +11,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
-import {
-	selectFavouriteColour,
-} from './selectors'
-
-import {
-	setFavouriteColour
-} from './actions'
+import homePageSelectors from './selectors'
+import homePageActions from './actions'
 
 import {
 	selectTheme,
@@ -76,18 +71,16 @@ export class HomePage extends React.Component {
 	_getBrowsingDevice: Function
 	_setFavouriteColour: Function
 
+	// Mock / Temporary
 	_genRandomMap: Function
+	_map: Object
 	// --------------------------------------------------------
 
 	// --------------------------------------------------------
 	// HELPER FUNCTIONS
 	// --------------------------------------------------------
-	_setFavouriteColour () {
-		this.props.actions.setFavouriteColour('blue')
-	}
-
 	_genRandomMap (rows: number, cols: number) {
-		function generateRnd () {
+		function generateGroundTiles () {
 			const tileMaterial = Math.floor(Math.random() * (4 - 0) + 1)
 
 			switch (tileMaterial) {
@@ -101,16 +94,21 @@ export class HomePage extends React.Component {
 				return 'gravel'
 			}
 		}
-		const tileMap = []
+
+		const groundMapLayer = []
 
 		for (let currentRow = 0; currentRow < rows; currentRow++) {
-			tileMap[currentRow] = []
+			groundMapLayer[currentRow] = []
 			for (let currentCol = 0; currentCol < cols; currentCol++) {
-				tileMap[currentRow][currentCol] = generateRnd()
+				groundMapLayer[currentRow][currentCol] = generateGroundTiles()
 			}
 		}
 
-		return tileMap
+		return {
+			rows: rows,
+			cols: cols,
+			groundMapLayer: groundMapLayer
+		}
 	}
 	// --------------------------------------------------------
 
@@ -120,7 +118,7 @@ export class HomePage extends React.Component {
 	constructor (props: Object) {
 		super(props)
 
-		this._setFavouriteColour = this._setFavouriteColour.bind(this)
+		this._map = this._genRandomMap(5, 3)
 	}
 	// --------------------------------------------------------
 
@@ -164,12 +162,16 @@ export class HomePage extends React.Component {
 				/> */}
 
 				<CanvasRenderer
-					width={500}
-					height={500}
-					groundMapLayer={this._genRandomMap(5, 4)}
+					width={900}
+					height={900}
+					rows={this._map.rows}
+					cols={this._map.cols}
+					// Base map layer
+					groundMapLayer={this._map.groundMapLayer}
 					groundAssets={assets.images.tiles}
 					centerX={1}
 					centerY={1}
+					displayCoordinates={true}
 				/>
 			</div>
 		)
@@ -185,7 +187,6 @@ export class HomePage extends React.Component {
 function mapDispatchToProps (dispatch) {
 	return {
 		actions: {
-			setFavouriteColour: (args) => dispatch(setFavouriteColour(args)),
 			dispatch,
 		}
 	}
@@ -196,8 +197,7 @@ function mapDispatchToProps (dispatch) {
 // --------------------------------------------------------
 const mapStateToProps = createStructuredSelector({
 	selectorTheme: selectTheme(),
-	selectorBrowsingDevice: selectBrowsingDevice(),
-	selectFavouriteColour: selectFavouriteColour()
+	selectorBrowsingDevice: selectBrowsingDevice()
 })
 
 // --------------------------------------------------------

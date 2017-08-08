@@ -10,7 +10,6 @@ import {REHYDRATE} from 'redux-persist/constants'
 
 import {
   DEFAULT_ACTION,
-	SET_FAVOURITE_COLOUR,
 } from './constants'
 
 const initialState = Immutable({
@@ -26,9 +25,6 @@ function homePageReducer (state: Object = initialState, action: { type: string, 
 		const incoming = action.payload.homePage
 		if (incoming) return { ...state, ...incoming }
 		return
-
-	case SET_FAVOURITE_COLOUR:
-		return state.setIn(['favouriteColour'], action.payload)
 
 	default:
 		return state

@@ -5,15 +5,14 @@
 //
 //
 // TODO
-// - Logger library ( with colours )
 // - Draw coordinates on top of the canvas ( boolean )
-// - Add map size property ( rows & cols )
 
 // --------------------------------------------------------
 // REACT / REDUX IMPORTS
 // --------------------------------------------------------
 import React from 'react'
 import { cacheAssets } from './../../utils/assetsLoader'
+import { logger } from './../../app'
 // --------------------------------------------------------
 
 // --------------------------------------------------------
@@ -29,13 +28,16 @@ import styles from './styles.css'
 type PropTypes = {
 	width?: number,
 	height?: number,
+	rows: number,
+	cols: number,
 	groundMapLayer: Array<Array<string>>,
 	groundAssets: Object,
 	centerX?: number,
 	centerY?: number,
 	tileWidth?: number,
 	tileHeight?: number,
-	canvasId?: string
+	canvasId?: string,
+	displayCoordinates?: boolean
 }
 // --------------------------------------------------------
 
@@ -45,13 +47,16 @@ type PropTypes = {
 const _defaultProps = {
 	width: 800,
 	height: 600,
+	rows: null,
+	cols: null,
 	groundMapLayer: [],
 	groundAssets: {},
 	centerX: 1,
 	centerY: 1,
 	tileWidth: 128,
 	tileHeight: 64,
-	canvasId: 'canvasRenderer'
+	canvasId: 'canvasRenderer',
+	displayCoordinates: false
 }
 // --------------------------------------------------------
 
@@ -120,7 +125,7 @@ class CanvasRenderer extends React.Component {
 			})
 		})
 		.catch(function (error) {
-			console.log(error)
+			logger.log('error', 1, 'CanvasRenderer - _preCacheAssets', `Error! Description: ${error}`)
 		})
 		// --------------------------------------------------------
 
@@ -136,8 +141,9 @@ class CanvasRenderer extends React.Component {
 		if (this.props.width && this.props.tileWidth) {
 			this._renderableCols = Math.floor(this.props.width / this.props.tileWidth)
 		}
-		console.log(`Renderable Rows: ${this._renderableRows}`)
-		console.log(`Renderable Cols: ${this._renderableCols}`)
+
+		logger.log('info', 1, 'CanvasRenderer: _calculateRenderableTiles', `Renderable Rows: ${this._renderableRows}`)
+		logger.log('info', 1, 'CanvasRenderer: _calculateRenderableTiles', `Renderable Cols: ${this._renderableRows}`)
 	}
 
 	// --------------------------------------------------------
@@ -180,10 +186,9 @@ class CanvasRenderer extends React.Component {
 		// Check if the assets are already cached before
 		// proceed with any canvas operation
 		if (this.state.assetsCached) {
-			console.log(this.state.assetsCached)
-			console.log('rendering...')
-			const rows = this.props.groundMapLayer.length
-			const cols = this.props.groundMapLayer[0].length
+			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Rendering...')
+			const rows = this.props.rows
+			const cols = this.props.cols
 
 			const canvasWidth = this.props.width
 			const canvasHeight = this.props.height
@@ -197,8 +202,8 @@ class CanvasRenderer extends React.Component {
 			if (context && tileHeight && tileWidth && canvasWidth && tileMap) {
 				context.clearRect(0, 0, this.props.width, this.props.height)
 
-				for (let currentRow = 0; currentRow < rows; currentRow++) {
-					for (let currentCol = 0; currentCol < cols; currentCol++) {
+				for (let currentCol = 0; currentCol < cols; currentCol++) {
+					for (let currentRow = 0; currentRow < rows; currentRow++) {
 						// Determining X position of the tile, and also centering on the screen
 						let tilePositionX = (currentRow - currentCol) * tileHeight
 						tilePositionX += (canvasWidth / 2) - (tileWidth /2)
@@ -216,11 +221,27 @@ class CanvasRenderer extends React.Component {
 							tileWidth,
 							tileHeight
 						)
+
+						// Displaying coordinates
+						if (this.props.displayCoordinates) {
+							context.font = '12px Arial'
+							context.fillStyle = 'white'
+							context.shadowColor = 'black'
+							context.shadowBlur=7
+							context.lineWidth=5
+							const coordsText = `R: ${currentRow} - C: ${currentCol}`
+							const coordsTextSize = context.measureText(coordsText)
+							const posX = (tilePositionX + (tileWidth / 2)) - (coordsTextSize.width /2)
+							const posY = (tilePositionY + (tileHeight /2)) + (12 /2)
+
+							context.strokeText(coordsText, posX, posY)
+							context.fillText(coordsText, posX, posY)
+						}
 					}
 				}
 			}
 		} else {
-			console.log('not ready to render')
+			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Not ready to render')
 		}
 	}
 
@@ -229,7 +250,7 @@ class CanvasRenderer extends React.Component {
 			const canvas = document.getElementById(this.props.canvasId)
 			if (canvas instanceof HTMLCanvasElement) { // eslint-disable-line no-undef
 				this._canvasContext = canvas.getContext('2d')
-				console.log('[componentDidMount] - CanvasContext set!')
+				logger.log('info', 1, 'CanvasRenderer: componentDidMount', 'CanvasContext set!')
 				this._preCacheAssets()
 			}
 		}

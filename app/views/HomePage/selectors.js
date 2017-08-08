@@ -19,14 +19,8 @@ const makeSelectHomePage = () => createSelector(
   selectHomePageDomain(),
   (substate) => substate
 )
-
-const selectFavouriteColour = () => createSelector(
-	selectHomePageDomain(),
-	(substate) => substate.favouriteColour
-)
-
 export default makeSelectHomePage
+
 export {
   selectHomePageDomain,
-	selectFavouriteColour,
 }

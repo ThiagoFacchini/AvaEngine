@@ -16,4 +16,3 @@ function genCommsRequestConstants (actionName: string) {
 }
 
 export const DEFAULT_ACTION = `${BASE_PATH}/DEFAULT_ACTION`
-export const SET_FAVOURITE_COLOUR = `${BASE_PATH}/SET_FAVOURITE_COLOUR`
