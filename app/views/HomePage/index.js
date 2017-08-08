@@ -19,9 +19,6 @@ import {
 	selectBrowsingDevice,
 } from './../../structural/App/selectors'
 
-import Label from './../../components/Label'
-import IconHolder from './../../components/IconHolder'
-import ProgressBar from './../../components/ProgressBar'
 import CanvasRenderer from './../../components/CanvasRenderer'
 
 // --------------------------------------------------------
@@ -85,13 +82,13 @@ export class HomePage extends React.Component {
 
 			switch (tileMaterial) {
 			case 1:
-				return 'grass'
+				return 'water01'
 			case 2:
-				return 'sand'
+				return 'water01'
 			case 3:
-				return 'dirt'
+				return 'water01'
 			case 4:
-				return 'gravel'
+				return 'water01'
 			}
 		}
 
@@ -118,7 +115,7 @@ export class HomePage extends React.Component {
 	constructor (props: Object) {
 		super(props)
 
-		this._map = this._genRandomMap(5, 3)
+		this._map = this._genRandomMap(1, 1)
 	}
 	// --------------------------------------------------------
 
@@ -130,48 +127,21 @@ export class HomePage extends React.Component {
 	render () {
 		return (
       <div className={classNames(styles.homepage, styles[this.props.selectorTheme], styles[this.props.selectorBrowsingDevice])}>
-        {/* <Helmet
-          title="HomePage"
-          meta={[ { name: 'description', content: 'Description of HomePage' } ]}
-        />
-				<Label
-					size='sm'
-					type='square'
-					label='&nbsp;&nbsp;My enchanted left nut'
-					maxWidth={170}
-				/>
-
-				<IconHolder
-					size='lg'
-					icon={assets.images.icons.yellowFire}
-				/>
-
-				<ProgressBar
-					width={800}
-					maxVal={200}
-					val={100}
-					size='md'
-					barColour='#0a0ac8'
-					label={true}
-					labelMode='percentage'
-					labelColour='#ffffff'
-					labelAlignment='center'
-					progressMarkers={true}
-					progressMarkersMode='percentage'
-					progressMarkersStep={12.5}
-				/> */}
-
 				<CanvasRenderer
-					width={900}
-					height={900}
-					rows={this._map.rows}
-					cols={this._map.cols}
+					// General Definitions
+					canvasWidth={900}
+					canvasHeight={900}
+					// Map Definitions
+					mapRows={this._map.rows}
+					mapCols={this._map.cols}
 					// Base map layer
-					groundMapLayer={this._map.groundMapLayer}
-					groundAssets={assets.images.tiles}
+					groundLevelMap={this._map.groundMapLayer}
+					groundLevelAssets={assets.materials.groundlevel}
+					// Player Related
 					centerX={1}
 					centerY={1}
-					displayCoordinates={true}
+					// Debug Options
+					debugDisplayCoordinates={true}
 				/>
 			</div>
 		)

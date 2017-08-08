@@ -11,7 +11,7 @@
 // REACT / REDUX IMPORTS
 // --------------------------------------------------------
 import React from 'react'
-import { cacheAssets } from './../../utils/assetsLoader'
+import { generateGroundLevelTiles } from './../../utils/assetsManager/assetsManager'
 import { logger } from './../../app'
 // --------------------------------------------------------
 
@@ -26,18 +26,18 @@ import styles from './styles.css'
 // COMPONENT PROPERTIES DEFINITION
 // --------------------------------------------------------
 type PropTypes = {
-	width?: number,
-	height?: number,
-	rows: number,
-	cols: number,
-	groundMapLayer: Array<Array<string>>,
-	groundAssets: Object,
+	canvasWidth?: number,
+	canvasHeight?: number,
+	mapRows: number,
+	mapCols: number,
+	groundLevelMap: Array<Array<string>>,
+	groundLevelAssets: Object,
 	centerX?: number,
 	centerY?: number,
 	tileWidth?: number,
 	tileHeight?: number,
 	canvasId?: string,
-	displayCoordinates?: boolean
+	debugDisplayCoordinates?: boolean
 }
 // --------------------------------------------------------
 
@@ -45,18 +45,18 @@ type PropTypes = {
 // DEFINES COMPONENT DEFAULT PROPERTIES
 // --------------------------------------------------------
 const _defaultProps = {
-	width: 800,
-	height: 600,
-	rows: null,
-	cols: null,
-	groundMapLayer: [],
-	groundAssets: {},
+	canvasWidth: 800,
+	canvasHeight: 600,
+	mapRows: null,
+	mapCols: null,
+	groundLevelMap: [],
+	groundLevelAssets: {},
 	centerX: 1,
 	centerY: 1,
-	tileWidth: 128,
+	tileWidth: 64,
 	tileHeight: 64,
 	canvasId: 'canvasRenderer',
-	displayCoordinates: false
+	debugDisplayCoordinates: false
 }
 // --------------------------------------------------------
 
@@ -95,31 +95,49 @@ class CanvasRenderer extends React.Component {
 	// Object that hold canvas methods, draw, clearRect, etc..
 	_canvasContext: any
 
+	// Render will wrap requestAnimationFrame / cancelAnimationFrame
+	// browser API
+	_renderer: any
+	_rendererAnimationSubStep: number
+
+	// Variables below will be use to optimise the rendering
+	// processing avoid unecassary use of gpu / processor
 	_renderableRows: number
 	_renderableCols: number
 
-	// The objects below will be used to pre-cache assets preventing
-	// the browser to lag while drawing in the canvas
-	_groundAssets: Object
+	// The objects below will be used to store pre-cache assets
+	// preventing the browser to lag while drawing in the canvas,
+	// playing a song, video, etc...
+	_groundLevelAssets: Object
 
+	// Initialisation... TODO - Better categorisation is necessary
 	_preCacheAssets: Function
 	_calculateRenderableTiles: Function
+	_renderFrame: Function
 	// --------------------------------------------------------
 
 	// --------------------------------------------------------
 	// COMPONENT HELPER FUNCTIONS
 	// --------------------------------------------------------
+	_calculateRenderableTiles () {
+		if (this.props.canvasHeight && this.props.tileHeight) {
+			this._renderableRows = Math.floor(this.props.canvasHeight / this.props.tileHeight)
+		}
+		if (this.props.canvasWidth && this.props.tileWidth) {
+			this._renderableCols = Math.floor(this.props.canvasWidth / this.props.tileWidth)
+		}
+	}
+
 	_preCacheAssets () {
-		// Assiging class reference to temporary variable
 		const _this = this
 		// Pre loading assets into a internal objects, so the browser
 		// won't lag while drawing in the canvas
 		// --------------------------------------------------------
-		// GROUND ASSETS
+		// GROUNDLEVEL ASSETS
 		// --------------------------------------------------------
-		cacheAssets(this.props.groundAssets, 'image')
-		.then(function (cachedObj) {
-			_this._groundAssets = cachedObj
+		generateGroundLevelTiles(this.props.groundLevelAssets)
+		.then(function (cachedGroundLevelAssets) {
+			_this._groundLevelAssets = cachedGroundLevelAssets
 			_this.setState({
 				assetsCached: true
 			})
@@ -128,24 +146,81 @@ class CanvasRenderer extends React.Component {
 			logger.log('error', 1, 'CanvasRenderer - _preCacheAssets', `Error! Description: ${error}`)
 		})
 		// --------------------------------------------------------
-
 		// Once all the assets are pre-cached, than change state forcing
 		// the component to re-render, this time able to run any canvas
 		// operation that depends on assets
 	}
 
-	_calculateRenderableTiles () {
-		if (this.props.height && this.props.tileHeight) {
-			this._renderableRows = Math.floor(this.props.height / this.props.tileHeight)
-		}
-		if (this.props.width && this.props.tileWidth) {
-			this._renderableCols = Math.floor(this.props.width / this.props.tileWidth)
-		}
+	_renderFrame () {
+		// logger.log('trace', 1, 'CanvasRenderer: _renderFrame', 'function called! Rendering...')
+		// Variable assigining to reduce amount the code and also make it a little
+		// more declarative
+		function draw () {
+			const rows 					= this.props.mapRows
+			const cols 					= this.props.mapCols
 
-		logger.log('info', 1, 'CanvasRenderer: _calculateRenderableTiles', `Renderable Rows: ${this._renderableRows}`)
-		logger.log('info', 1, 'CanvasRenderer: _calculateRenderableTiles', `Renderable Cols: ${this._renderableRows}`)
+			const canvasWidth 	= this.props.canvasWidth
+			const canvasHeight 	= this.props.canvasHeight
+			const context 			= this._canvasContext
+
+			const tileHeight 		= this.props.tileHeight
+			const tileWidth 		= this.props.tileWidth
+
+			// Map Layers
+			const groundLevelTileMap = this.props.groundLevelMap
+
+			// Restarting animationSubStep
+			if (this._rendererAnimationSubStep > 15) {
+				console.log('substep looped')
+				this._rendererAnimationSubStep = 0
+			}
+
+			// Drawing
+			if (context && tileHeight && tileWidth && canvasWidth && canvasHeight && groundLevelTileMap) {
+				// Clearing the canvas
+				context.clearRect(0, 0, canvasWidth, canvasHeight)
+
+				for (let currentCol = 0; currentCol < cols; currentCol++) {
+					for (let currentRow = 0; currentRow < rows; currentRow++) {
+						// Determining X position of the tile
+						const tilePositionX = currentCol * tileWidth
+						// Determining Y position of the tile
+						const tilePositionY = currentRow * tileHeight
+						// Getting the current Tile Material
+						const tileMaterial = groundLevelTileMap[currentRow][currentCol]
+						// Drawing the tile
+						context.shadowBlur=0
+						context.drawImage(this._groundLevelAssets[tileMaterial][this._rendererAnimationSubStep],
+							Math.round(tilePositionX),
+							Math.round(tilePositionY),
+							tileWidth,
+							tileHeight
+						)
+
+						// Displaying coordinates
+						if (this.props.debugDisplayCoordinates) {
+							context.font = '10px Arial'
+							context.fillStyle = 'white'
+							context.shadowColor = 'black'
+							context.shadowBlur=7
+							context.lineWidth=5
+							const coordsText = `R: ${currentRow} - C: ${currentCol}`
+							const coordsTextSize = context.measureText(coordsText)
+							const posX = (tilePositionX + (tileWidth / 2)) - (coordsTextSize.width /2)
+							const posY = (tilePositionY + (tileHeight /2)) + (10 /2)
+
+							context.strokeText(coordsText, posX, posY)
+							context.fillText(coordsText, posX, posY)
+						}
+					}
+				}
+
+				// Incrementing tileMaterialAnimationFrame
+				this._rendererAnimationSubStep++
+				requestAnimationFrame(draw()) // eslint-disable-line no-undef
+			}
+		}
 	}
-
 	// --------------------------------------------------------
 
 	// --------------------------------------------------------
@@ -159,11 +234,14 @@ class CanvasRenderer extends React.Component {
 		}
 
 		// Pre-cached assets objects
-		this._groundAssets = {}
+		this._groundLevelAssets = {}
+
+		this._rendererAnimationSubStep = 0
 
 		// Function bound to the component class
-		this._preCacheAssets = this._preCacheAssets.bind(this)
 		this._calculateRenderableTiles = this._calculateRenderableTiles.bind(this)
+		this._preCacheAssets = this._preCacheAssets.bind(this)
+		this._renderFrame = this._renderFrame.bind(this)
 	}
 
 	componentWillMount () {
@@ -175,8 +253,8 @@ class CanvasRenderer extends React.Component {
 		return (
 			<canvas
 				id={this.props.canvasId}
-				width={this.props.width}
-				height={this.props.height}
+				width={this.props.canvasWidth}
+				height={this.props.canvasHeight}
 				className={classNames(styles.canvasrenderer)}
 			/>
 		)
@@ -186,60 +264,8 @@ class CanvasRenderer extends React.Component {
 		// Check if the assets are already cached before
 		// proceed with any canvas operation
 		if (this.state.assetsCached) {
-			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Rendering...')
-			const rows = this.props.rows
-			const cols = this.props.cols
-
-			const canvasWidth = this.props.width
-			const canvasHeight = this.props.height
-			const context = this._canvasContext
-
-			const tileHeight = this.props.tileHeight
-			const tileWidth = this.props.tileWidth
-			const tileMap = this.props.groundMapLayer
-
-			// Drawing
-			if (context && tileHeight && tileWidth && canvasWidth && tileMap) {
-				context.clearRect(0, 0, this.props.width, this.props.height)
-
-				for (let currentCol = 0; currentCol < cols; currentCol++) {
-					for (let currentRow = 0; currentRow < rows; currentRow++) {
-						// Determining X position of the tile, and also centering on the screen
-						let tilePositionX = (currentRow - currentCol) * tileHeight
-						tilePositionX += (canvasWidth / 2) - (tileWidth /2)
-
-						// Determining Y position of the tile, and also centering on the screen
-						const tilePositionY = (currentRow + currentCol) * (tileHeight /2)
-
-						// Getting the current Tile Material
-						const tileMaterial = tileMap[currentRow][currentCol]
-
-						// Drawing the tile
-						context.drawImage(this._groundAssets[tileMaterial],
-							Math.round(tilePositionX),
-							Math.round(tilePositionY),
-							tileWidth,
-							tileHeight
-						)
-
-						// Displaying coordinates
-						if (this.props.displayCoordinates) {
-							context.font = '12px Arial'
-							context.fillStyle = 'white'
-							context.shadowColor = 'black'
-							context.shadowBlur=7
-							context.lineWidth=5
-							const coordsText = `R: ${currentRow} - C: ${currentCol}`
-							const coordsTextSize = context.measureText(coordsText)
-							const posX = (tilePositionX + (tileWidth / 2)) - (coordsTextSize.width /2)
-							const posY = (tilePositionY + (tileHeight /2)) + (12 /2)
-
-							context.strokeText(coordsText, posX, posY)
-							context.fillText(coordsText, posX, posY)
-						}
-					}
-				}
-			}
+			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Ready to render. starting...')
+			requestAnimationFrame(this._renderFrame) // eslint-disable-line no-undef
 		} else {
 			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Not ready to render')
 		}
