@@ -95,7 +95,7 @@ class CanvasRenderer extends React.Component {
 	// FUNCTION DECLARATION FOR HELPER FUNCTIONS
 	// --------------------------------------------------------
 	// Instance of canvasRederer library
-	_canvasRenderer: Object
+	_canvasRendererModule: Object
 
 	// The objects below will be used to store pre-cache assets
 	// preventing the browser to lag while drawing in the canvas,
@@ -139,37 +139,29 @@ class CanvasRenderer extends React.Component {
 			const canvas = document.getElementById(this.props.canvasId)
 			if (canvas instanceof HTMLCanvasElement) { // eslint-disable-line no-undef
 				// Component has been mounted, time to configure canvasRendererModule
-				const mapRows = this.props.mapRows
-				const mapCols = this.props.mapCols
-				const canvasWidth = this.props.canvasWidth
-				const canvasHeight = this.props.canvasHeight
-				const canvasContext = canvas.getContext('2d')
-				const tileHeight = this.props.tileHeight
-				const tileWidth = this.props.tileWidth
-				const mapLayers = {
-					groundLevel: this.props.groundLevelMap
-				}
-				const cachedAssets = this._cachedAssets
-				const debugSettings = {
-					displayCoordinates: this.props.debugDisplayCoordinates,
-					displayFPS: this.props.debugDisplayFPS
+				const settings = {
+					mapRows: this.props.mapRows,
+					mapCols: this.props.mapCols,
+					canvasWidth: this.props.canvasWidth,
+					canvasHeight: this.props.canvasHeight,
+					canvasContext: canvas.getContext('2d'),
+					tileWidth: this.props.tileWidth,
+					tileHeight: this.props.tileHeight,
+					mapLayers: {
+						groundLevel: this.props.groundLevelMap
+					},
+					cachedAssets: this._cachedAssets,
+					debugSettings: {
+						displayCoordinates: this.props.debugDisplayCoordinates,
+						displayFPS: this.props.debugDisplayFPS
+					},
+					animationFpsCap: 16
 				}
 
-				this._canvasRenderer.configureRenderer(
-					mapRows,
-					mapCols,
-					canvasWidth,
-					canvasHeight,
-					canvasContext,
-					tileHeight,
-					tileWidth,
-					mapLayers,
-					cachedAssets,
-					debugSettings,
-					function () {
-						_this._canvasRenderer.renderStart()
-					}
-				)
+				this._canvasRendererModule.configureRenderer(settings, function () {
+					// Once the canvasRenderer is configured, then start to render
+					_this._canvasRendererModule.renderStart()
+				})
 			}
 		}
 	}
@@ -186,7 +178,7 @@ class CanvasRenderer extends React.Component {
 		}
 
 		// Instatiating canvasRenderer
-		this._canvasRenderer = new CanvasRendererModule()
+		this._canvasRendererModule = new CanvasRendererModule()
 		// Pre-cached assets objects
 		this._cachedAssets = {}
 		// Function bound to the component class

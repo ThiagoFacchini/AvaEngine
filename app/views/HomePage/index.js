@@ -78,16 +78,18 @@ export class HomePage extends React.Component {
 	// --------------------------------------------------------
 	_genRandomMap (rows: number, cols: number) {
 		function generateGroundTiles () {
-			const tileMaterial = Math.floor(Math.random() * (4 - 0) + 1)
+			const tileMaterial = Math.floor(Math.random() * (5 - 0) + 1)
 
 			switch (tileMaterial) {
 			case 1:
-				return 'water01'
+				return 'dirt01'
 			case 2:
-				return 'water01'
+				return 'grass01'
 			case 3:
-				return 'water01'
+				return 'gravel01'
 			case 4:
+				return 'sand01'
+			case 5:
 				return 'water01'
 			}
 		}
@@ -115,7 +117,7 @@ export class HomePage extends React.Component {
 	constructor (props: Object) {
 		super(props)
 
-		this._map = this._genRandomMap(1, 1)
+		this._map = this._genRandomMap(10, 10)
 	}
 	// --------------------------------------------------------
 
@@ -141,7 +143,7 @@ export class HomePage extends React.Component {
 					centerPosX={1}
 					centerPosY={1}
 					// Debug Options
-					debugDisplayCoordinates={true}
+					debugDisplayCoordinates={false}
 					debugDisplayFPS={true}
 				/>
 			</div>
