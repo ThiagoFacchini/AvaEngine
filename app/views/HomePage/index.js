@@ -138,10 +138,11 @@ export class HomePage extends React.Component {
 					groundLevelMap={this._map.groundMapLayer}
 					groundLevelAssets={assets.materials.groundlevel}
 					// Player Related
-					centerX={1}
-					centerY={1}
+					centerPosX={1}
+					centerPosY={1}
 					// Debug Options
 					debugDisplayCoordinates={true}
+					debugDisplayFPS={true}
 				/>
 			</div>
 		)

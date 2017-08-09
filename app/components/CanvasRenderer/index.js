@@ -12,7 +12,9 @@
 // --------------------------------------------------------
 import React from 'react'
 import { generateGroundLevelTiles } from './../../utils/assetsManager/assetsManager'
+// Custom Imports
 import { logger } from './../../app'
+import CanvasRendererModule from './../../utils/canvasRenderer/canvasRenderer'
 // --------------------------------------------------------
 
 // --------------------------------------------------------
@@ -32,12 +34,14 @@ type PropTypes = {
 	mapCols: number,
 	groundLevelMap: Array<Array<string>>,
 	groundLevelAssets: Object,
-	centerX?: number,
-	centerY?: number,
+	centerPosX?: number,
+	centerPosY?: number,
+	zoomLevel?: number,
 	tileWidth?: number,
 	tileHeight?: number,
 	canvasId?: string,
-	debugDisplayCoordinates?: boolean
+	debugDisplayCoordinates?: boolean,
+	debugDisplayFPS?: boolean
 }
 // --------------------------------------------------------
 
@@ -51,12 +55,14 @@ const _defaultProps = {
 	mapCols: null,
 	groundLevelMap: [],
 	groundLevelAssets: {},
-	centerX: 1,
-	centerY: 1,
+	centerPosX: 1,
+	centerPosY: 1,
+	zoomLevel: 100,
 	tileWidth: 64,
 	tileHeight: 64,
 	canvasId: 'canvasRenderer',
-	debugDisplayCoordinates: false
+	debugDisplayCoordinates: false,
+	debugDisplayFPS: false
 }
 // --------------------------------------------------------
 
@@ -66,17 +72,14 @@ class CanvasRenderer extends React.Component {
 	// ASSIGINING TYPE TO COMPONENT.PROPS
 	// --------------------------------------------------------
 	propTypes: PropTypes
-
 	// --------------------------------------------------------
 	// ASSIGINING TYPE TO COMPONENT.DEFAULTPROPS
 	// --------------------------------------------------------
 	static defaultProps: PropTypes
-
 	// --------------------------------------------------------
 	// COMPONENT CONTEXT DEFINITION
 	// --------------------------------------------------------
 	static contextTypes = {}
-
 	// --------------------------------------------------------
 	// COMPONENT STATE DEFINITION
 	// --------------------------------------------------------
@@ -88,46 +91,25 @@ class CanvasRenderer extends React.Component {
 	state: {
 		assetsCached: boolean
 	}
-
 	// --------------------------------------------------------
 	// FUNCTION DECLARATION FOR HELPER FUNCTIONS
 	// --------------------------------------------------------
-	// Object that hold canvas methods, draw, clearRect, etc..
-	_canvasContext: any
-
-	// Render will wrap requestAnimationFrame / cancelAnimationFrame
-	// browser API
-	_renderer: any
-	_rendererAnimationSubStep: number
-
-	// Variables below will be use to optimise the rendering
-	// processing avoid unecassary use of gpu / processor
-	_renderableRows: number
-	_renderableCols: number
+	// Instance of canvasRederer library
+	_canvasRenderer: Object
 
 	// The objects below will be used to store pre-cache assets
 	// preventing the browser to lag while drawing in the canvas,
 	// playing a song, video, etc...
-	_groundLevelAssets: Object
+	_cachedAssets: Object
 
 	// Initialisation... TODO - Better categorisation is necessary
 	_preCacheAssets: Function
-	_calculateRenderableTiles: Function
-	_renderFrame: Function
+	_configureCanvasRendererModule: Function
 	// --------------------------------------------------------
 
 	// --------------------------------------------------------
 	// COMPONENT HELPER FUNCTIONS
 	// --------------------------------------------------------
-	_calculateRenderableTiles () {
-		if (this.props.canvasHeight && this.props.tileHeight) {
-			this._renderableRows = Math.floor(this.props.canvasHeight / this.props.tileHeight)
-		}
-		if (this.props.canvasWidth && this.props.tileWidth) {
-			this._renderableCols = Math.floor(this.props.canvasWidth / this.props.tileWidth)
-		}
-	}
-
 	_preCacheAssets () {
 		const _this = this
 		// Pre loading assets into a internal objects, so the browser
@@ -137,7 +119,7 @@ class CanvasRenderer extends React.Component {
 		// --------------------------------------------------------
 		generateGroundLevelTiles(this.props.groundLevelAssets)
 		.then(function (cachedGroundLevelAssets) {
-			_this._groundLevelAssets = cachedGroundLevelAssets
+			_this._cachedAssets.groundLevel = cachedGroundLevelAssets
 			_this.setState({
 				assetsCached: true
 			})
@@ -151,73 +133,43 @@ class CanvasRenderer extends React.Component {
 		// operation that depends on assets
 	}
 
-	_renderFrame () {
-		// logger.log('trace', 1, 'CanvasRenderer: _renderFrame', 'function called! Rendering...')
-		// Variable assigining to reduce amount the code and also make it a little
-		// more declarative
-		function draw () {
-			const rows 					= this.props.mapRows
-			const cols 					= this.props.mapCols
-
-			const canvasWidth 	= this.props.canvasWidth
-			const canvasHeight 	= this.props.canvasHeight
-			const context 			= this._canvasContext
-
-			const tileHeight 		= this.props.tileHeight
-			const tileWidth 		= this.props.tileWidth
-
-			// Map Layers
-			const groundLevelTileMap = this.props.groundLevelMap
-
-			// Restarting animationSubStep
-			if (this._rendererAnimationSubStep > 15) {
-				console.log('substep looped')
-				this._rendererAnimationSubStep = 0
-			}
-
-			// Drawing
-			if (context && tileHeight && tileWidth && canvasWidth && canvasHeight && groundLevelTileMap) {
-				// Clearing the canvas
-				context.clearRect(0, 0, canvasWidth, canvasHeight)
-
-				for (let currentCol = 0; currentCol < cols; currentCol++) {
-					for (let currentRow = 0; currentRow < rows; currentRow++) {
-						// Determining X position of the tile
-						const tilePositionX = currentCol * tileWidth
-						// Determining Y position of the tile
-						const tilePositionY = currentRow * tileHeight
-						// Getting the current Tile Material
-						const tileMaterial = groundLevelTileMap[currentRow][currentCol]
-						// Drawing the tile
-						context.shadowBlur=0
-						context.drawImage(this._groundLevelAssets[tileMaterial][this._rendererAnimationSubStep],
-							Math.round(tilePositionX),
-							Math.round(tilePositionY),
-							tileWidth,
-							tileHeight
-						)
-
-						// Displaying coordinates
-						if (this.props.debugDisplayCoordinates) {
-							context.font = '10px Arial'
-							context.fillStyle = 'white'
-							context.shadowColor = 'black'
-							context.shadowBlur=7
-							context.lineWidth=5
-							const coordsText = `R: ${currentRow} - C: ${currentCol}`
-							const coordsTextSize = context.measureText(coordsText)
-							const posX = (tilePositionX + (tileWidth / 2)) - (coordsTextSize.width /2)
-							const posY = (tilePositionY + (tileHeight /2)) + (10 /2)
-
-							context.strokeText(coordsText, posX, posY)
-							context.fillText(coordsText, posX, posY)
-						}
-					}
+	_configureCanvasRendererModule () {
+		const _this = this
+		if (this.props.canvasId) {
+			const canvas = document.getElementById(this.props.canvasId)
+			if (canvas instanceof HTMLCanvasElement) { // eslint-disable-line no-undef
+				// Component has been mounted, time to configure canvasRendererModule
+				const mapRows = this.props.mapRows
+				const mapCols = this.props.mapCols
+				const canvasWidth = this.props.canvasWidth
+				const canvasHeight = this.props.canvasHeight
+				const canvasContext = canvas.getContext('2d')
+				const tileHeight = this.props.tileHeight
+				const tileWidth = this.props.tileWidth
+				const mapLayers = {
+					groundLevel: this.props.groundLevelMap
+				}
+				const cachedAssets = this._cachedAssets
+				const debugSettings = {
+					displayCoordinates: this.props.debugDisplayCoordinates,
+					displayFPS: this.props.debugDisplayFPS
 				}
 
-				// Incrementing tileMaterialAnimationFrame
-				this._rendererAnimationSubStep++
-				requestAnimationFrame(draw()) // eslint-disable-line no-undef
+				this._canvasRenderer.configureRenderer(
+					mapRows,
+					mapCols,
+					canvasWidth,
+					canvasHeight,
+					canvasContext,
+					tileHeight,
+					tileWidth,
+					mapLayers,
+					cachedAssets,
+					debugSettings,
+					function () {
+						_this._canvasRenderer.renderStart()
+					}
+				)
 			}
 		}
 	}
@@ -233,23 +185,18 @@ class CanvasRenderer extends React.Component {
 			assetsCached: false
 		}
 
+		// Instatiating canvasRenderer
+		this._canvasRenderer = new CanvasRendererModule()
 		// Pre-cached assets objects
-		this._groundLevelAssets = {}
-
-		this._rendererAnimationSubStep = 0
-
+		this._cachedAssets = {}
 		// Function bound to the component class
-		this._calculateRenderableTiles = this._calculateRenderableTiles.bind(this)
 		this._preCacheAssets = this._preCacheAssets.bind(this)
-		this._renderFrame = this._renderFrame.bind(this)
+		this._configureCanvasRendererModule = this._configureCanvasRendererModule.bind(this)
 	}
 
-	componentWillMount () {
-	}
+	componentWillMount () {}
 
 	render () {
-		this._calculateRenderableTiles()
-
 		return (
 			<canvas
 				id={this.props.canvasId}
@@ -264,22 +211,17 @@ class CanvasRenderer extends React.Component {
 		// Check if the assets are already cached before
 		// proceed with any canvas operation
 		if (this.state.assetsCached) {
-			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Ready to render. starting...')
-			requestAnimationFrame(this._renderFrame) // eslint-disable-line no-undef
+			logger.log('trace', 1, 'CanvasRenderer: componentDidUpdate', 'Configuring Renderer Module')
+			this._configureCanvasRendererModule()
 		} else {
-			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Not ready to render')
+			logger.log('info', 1, 'CanvasRenderer: componentDidUpdate', 'Not ready to render, waiting for assets to be cached')
 		}
 	}
 
 	componentDidMount () {
-		if (this.props.canvasId) {
-			const canvas = document.getElementById(this.props.canvasId)
-			if (canvas instanceof HTMLCanvasElement) { // eslint-disable-line no-undef
-				this._canvasContext = canvas.getContext('2d')
-				logger.log('info', 1, 'CanvasRenderer: componentDidMount', 'CanvasContext set!')
-				this._preCacheAssets()
-			}
-		}
+		// All the necessary components are now mounted
+		// Time to start pre-cache all the assets
+		this._preCacheAssets()
 	}
 	// --------------------------------------------------------
 }
