@@ -118,66 +118,24 @@ export default function CanvasRendererModule () {
 
 					for (currentCol = 0; currentCol < this.props.mapCols; currentCol++) {
 						for (currentRow = 0; currentRow < this.props.mapRows; currentRow++) {
-							// Determining X position of the tile
-							const tilePositionX = currentCol * this.props.tileWidth
-							// Determining Y position of the tile
-							const tilePositionY = currentRow * this.props.tileHeight
+							// -------------------------------------------------------
+							// STARTING THE RENDERING PROCCESS
+							// ORDER OF WHAT WILL BE RENDERED IS VERY IMPORTANT
+							// -------------------------------------------------------
+							// 1 - Render Ground Tiles
+							this.renderGroundTiles(currentRow, currentCol)
 
-							// Getting the current Tile Material
-							const tileMaterial = this.props.mapLayers.groundLevel[currentRow][currentCol]
+							// 2 - Should display debug Coordinates?
+							.then(this.renderDebugCoordinates(currentRow, currentCol))
 
-							// Check if the current tileMaterial is animated and has the number of frames
-							// that the animationCurrentFrame is at
-							let TileToBeRendered = null
-							if (this.props.cachedAssets.groundLevel[tileMaterial][this.props.animationCurrentFrame]) {
-								TileToBeRendered = this.props.cachedAssets.groundLevel[tileMaterial][this.props.animationCurrentFrame]
-							} else {
-								TileToBeRendered = this.props.cachedAssets.groundLevel[tileMaterial][0]
-							}
+							// 3 - Should display debug FPS Statistics?
+							.then(this.renderDebugDisplayFPS())
 
-							// Drawing the tile
-							this.props.canvasContext.shadowBlur = 0
-							this.props.canvasContext.drawImage(
-								TileToBeRendered,
-								Math.round(tilePositionX),
-								Math.round(tilePositionY),
-								this.props.tileWidth,
-								this.props.tileHeight
-							)
-
-							// If the debug settings were set to display coordinates
-							if (this.props.debugSettings.displayCoordinates) {
-								this.props.canvasContext.font = '10px Arial'
-								this.props.canvasContext.fillStyle = 'white'
-								this.props.canvasContext.shadowColor = 'black'
-								this.props.canvasContext.shadowBlur=7
-								this.props.canvasContext.lineWidth=5
-
-								const coordsText = `R: ${currentRow} - C: ${currentCol}`
-								const coordsTextSize = this.props.canvasContext.measureText(coordsText)
-								const posX = (tilePositionX + (this.props.tileWidth / 2)) - (coordsTextSize.width /2)
-								const posY = (tilePositionY + (this.props.tileHeight /2)) + (10 /2)
-
-								this.props.canvasContext.strokeText(coordsText, posX, posY)
-								this.props.canvasContext.fillText(coordsText, posX, posY)
-							}
-
-							// If the debug settings were set do display FPS information
-							if (this.props.debugSettings.displayFPS) {
-								this.props.canvasContext.font = '10px Arial'
-								this.props.canvasContext.fillStyle = 'white'
-								this.props.canvasContext.shadowColor = 'black'
-								this.props.canvasContext.shadowBlur=7
-								this.props.canvasContext.lineWidth=5
-
-								const fpsText = `Current FPS: ${this.props.stats.lastFPSCount} / Capable of ${this.props.stats.lastFPSCapacity} FPS`
-								const fpsTextSize = this.props.canvasContext.measureText(fpsText)
-								const posX = (this.props.canvasWidth - fpsTextSize.width) - 20
-								const posY = 20
-
-								this.props.canvasContext.strokeText(fpsText, posX, posY)
-								this.props.canvasContext.fillText(fpsText, posX, posY)
-							}
+							// Any error? How do we handle it?
+							.catch(() => {
+								// error, do something else
+							})
+							// -------------------------------------------------------
 						}
 					}
 
@@ -202,6 +160,96 @@ export default function CanvasRendererModule () {
 				}
 				requestAnimationFrame(this.render.bind(this)) // eslint-disable-line no-undef
 			}
+		},
+
+		renderGroundTiles: function (row: number, col: number) {
+			return new Promise((resolve, reject) => {
+				// Determining X position of the tile
+				const tilePositionX = col * this.props.tileWidth
+				// Determining Y position of the tile
+				const tilePositionY = row * this.props.tileHeight
+
+				// Getting the current Tile Material
+				const tileMaterial = this.props.mapLayers.groundLevel[row][col]
+
+				// Check if the current tileMaterial is animated and has the number of frames
+				// that the animationCurrentFrame is at.
+				let TileToBeRendered = null
+				if (this.props.cachedAssets.groundLevel[tileMaterial][this.props.animationCurrentFrame]) {
+					TileToBeRendered = this.props.cachedAssets.groundLevel[tileMaterial][this.props.animationCurrentFrame]
+				} else {
+					TileToBeRendered = this.props.cachedAssets.groundLevel[tileMaterial][0]
+				}
+
+				// Drawing the tile
+				this.props.canvasContext.shadowBlur = 0
+				this.props.canvasContext.drawImage(
+					TileToBeRendered,
+					Math.round(tilePositionX),
+					Math.round(tilePositionY),
+					this.props.tileWidth,
+					this.props.tileHeight
+				)
+
+				// Tile rendered, resolve the promise...
+				resolve()
+			})
+		},
+
+		renderDebugCoordinates: function (row: number, col: number) {
+			return new Promise((resolve, reject) => {
+				if (this.props.debugSettings.displayCoordinates) {
+					const tilePositionX = col * this.props.tileWidth
+					const tilePositionY = row * this.props.tileHeight
+
+					this.props.canvasContext.font = '10px Arial'
+					this.props.canvasContext.fillStyle = 'white'
+					this.props.canvasContext.shadowColor = 'black'
+					this.props.canvasContext.shadowBlur=7
+					this.props.canvasContext.lineWidth=5
+
+					const coordsText = `R: ${row} - C: ${col}`
+					const coordsTextSize = this.props.canvasContext.measureText(coordsText)
+					const posX = (tilePositionX + (this.props.tileWidth / 2)) - (coordsTextSize.width /2)
+					const posY = (tilePositionY + (this.props.tileHeight /2)) + (10 /2)
+
+					this.props.canvasContext.strokeText(coordsText, posX, posY)
+					this.props.canvasContext.fillText(coordsText, posX, posY)
+
+					// Tile coordinates rendered, resolve the promise
+					resolve()
+
+				// Nothing to do, resolve the promise
+				} else {
+					resolve()
+				}
+			})
+		},
+
+		renderDebugDisplayFPS: function () {
+			return new Promise((resolve, reject) => {
+				if (this.props.debugSettings.displayFPS) {
+					this.props.canvasContext.font = '10px Arial'
+					this.props.canvasContext.fillStyle = 'white'
+					this.props.canvasContext.shadowColor = 'black'
+					this.props.canvasContext.shadowBlur=7
+					this.props.canvasContext.lineWidth=5
+
+					const fpsText = `Current FPS: ${this.props.stats.lastFPSCount} / Capable of ${this.props.stats.lastFPSCapacity} FPS`
+					const fpsTextSize = this.props.canvasContext.measureText(fpsText)
+					const posX = (this.props.canvasWidth - fpsTextSize.width) - 20
+					const posY = 20
+
+					this.props.canvasContext.strokeText(fpsText, posX, posY)
+					this.props.canvasContext.fillText(fpsText, posX, posY)
+					// FPS statistics diplayed, resolve the promise
+					resolve()
+
+				// Nothing to do, resolve the promise
+				} else {
+					resolve()
+				}
+			})
 		}
 	}
 }

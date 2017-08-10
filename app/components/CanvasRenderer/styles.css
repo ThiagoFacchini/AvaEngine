@@ -1,7 +1,7 @@
 @import '../../styles/themesManager.css';
 
 .canvasrenderer {
-	position: absolute;
+	position: relative;
 	display: block;
 	top: 0;
 	left: 0;

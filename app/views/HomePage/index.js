@@ -10,6 +10,7 @@
 // --------------------------------------------------------
 import React from 'react'
 import { connect } from 'react-redux'
+import Rnd from 'react-rnd'
 import { createStructuredSelector } from 'reselect'
 import homePageSelectors from './selectors'
 import homePageActions from './actions'
@@ -127,25 +128,33 @@ export class HomePage extends React.Component {
 	componentWillMount () {}
 
 	render () {
+		console.log(styles.dragHandler)
 		return (
       <div className={classNames(styles.homepage, styles[this.props.selectorTheme], styles[this.props.selectorBrowsingDevice])}>
-				<CanvasRenderer
-					// General Definitions
-					canvasWidth={900}
-					canvasHeight={900}
-					// Map Definitions
-					mapRows={this._map.rows}
-					mapCols={this._map.cols}
-					// Base map layer
-					groundLevelMap={this._map.groundMapLayer}
-					groundLevelAssets={assets.materials.groundlevel}
-					// Player Related
-					centerPosX={1}
-					centerPosY={1}
-					// Debug Options
-					debugDisplayCoordinates={false}
-					debugDisplayFPS={true}
-				/>
+				<Rnd
+					default={{x: 0,	y: 0, width: 640, height: 480}}
+					bounds='parent'
+					dragHandlerClassName='.cu'
+				>
+					<div className={classNames('cu', styles.dragHandler)}></div>
+					<CanvasRenderer
+						// General Definitions
+						canvasWidth={640}
+						canvasHeight={480}
+						// Map Definitions
+						mapRows={this._map.rows}
+						mapCols={this._map.cols}
+						// Base map layer
+						groundLevelMap={this._map.groundMapLayer}
+						groundLevelAssets={assets.materials.groundlevel}
+						// Player Related
+						centerPosX={1}
+						centerPosY={1}
+						// Debug Options
+						debugDisplayCoordinates={true}
+						debugDisplayFPS={true}
+					/>
+			</Rnd>
 			</div>
 		)
 	}

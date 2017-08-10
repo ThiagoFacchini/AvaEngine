@@ -1,7 +1,21 @@
 @import '../../styles/themesManager.css';
 
 .homepage {
+	position: absolute;
+	top: 0;
+	left: 0;
 	height: 100%;
 	width: 100%;
 	background-color: #555;
+	overflow: hidden;
+
+	& .dragHandler {
+		background-color: red;
+		width: 20px;
+		height: 20px;
+		z-index: 100;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
 }
