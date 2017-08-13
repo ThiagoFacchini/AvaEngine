@@ -11,9 +11,10 @@
 // REACT / REDUX IMPORTS
 // --------------------------------------------------------
 import React from 'react'
-import { generateGroundLevelTiles } from './../../utils/assetsManager/assetsManager'
+import Rnd from 'react-rnd'
 // Custom Imports
 import { logger } from './../../app'
+import { generateGroundLevelTiles } from './../../utils/assetsManager/assetsManager'
 import CanvasRendererModule from './../../utils/canvasRenderer/canvasRenderer'
 // --------------------------------------------------------
 
@@ -83,13 +84,11 @@ class CanvasRenderer extends React.Component {
 	// --------------------------------------------------------
 	// COMPONENT STATE DEFINITION
 	// --------------------------------------------------------
-	state = {}
-	// --------------------------------------------------------
-	// --------------------------------------------------------
-	// COMPONENT STATE DEFINITION
-	// --------------------------------------------------------
 	state: {
-		assetsCached: boolean
+		assetsCached: boolean,
+		canvasWidth: number,
+		canvasHeight: number,
+		isCanvasResizing: boolean
 	}
 	// --------------------------------------------------------
 	// FUNCTION DECLARATION FOR HELPER FUNCTIONS
@@ -102,7 +101,11 @@ class CanvasRenderer extends React.Component {
 	// playing a song, video, etc...
 	_cachedAssets: Object
 
+	_canvasRendererBorderTickness: number
+
 	// Initialisation... TODO - Better categorisation is necessary
+
+	_updateCanvasRendererSize: Function
 	_preCacheAssets: Function
 	_configureCanvasRendererModule: Function
 	// --------------------------------------------------------
@@ -110,6 +113,14 @@ class CanvasRenderer extends React.Component {
 	// --------------------------------------------------------
 	// COMPONENT HELPER FUNCTIONS
 	// --------------------------------------------------------
+	_updateCanvasRendererSize (delta: Object) {
+		this.setState({
+			canvasWidth: this.state.canvasWidth + (delta.width),
+			canvasHeight: this.state.canvasHeight + (delta.height),
+			isCanvasResizing: false
+		})
+	}
+
 	_preCacheAssets () {
 		const _this = this
 		// Pre loading assets into a internal objects, so the browser
@@ -142,8 +153,8 @@ class CanvasRenderer extends React.Component {
 				const settings = {
 					mapRows: this.props.mapRows,
 					mapCols: this.props.mapCols,
-					canvasWidth: this.props.canvasWidth,
-					canvasHeight: this.props.canvasHeight,
+					canvasWidth: this.state.canvasWidth,
+					canvasHeight: this.state.canvasHeight,
 					canvasContext: canvas.getContext('2d'),
 					tileWidth: this.props.tileWidth,
 					tileHeight: this.props.tileHeight,
@@ -174,14 +185,21 @@ class CanvasRenderer extends React.Component {
 		super(props)
 
 		this.state = {
-			assetsCached: false
+			assetsCached: false,
+			canvasWidth: this.props.canvasWidth,
+			canvasHeight: this.props.canvasHeight,
+			isCanvasResizing: false
 		}
 
-		// Instatiating canvasRenderer
+		// Entities
 		this._canvasRendererModule = new CanvasRendererModule()
-		// Pre-cached assets objects
+
+		// Variables & Objects
+		this._canvasRendererBorderTickness = 7
 		this._cachedAssets = {}
-		// Function bound to the component class
+
+		// Functions & Methods
+		this._updateCanvasRendererSize = this._updateCanvasRendererSize.bind(this)
 		this._preCacheAssets = this._preCacheAssets.bind(this)
 		this._configureCanvasRendererModule = this._configureCanvasRendererModule.bind(this)
 	}
@@ -190,12 +208,37 @@ class CanvasRenderer extends React.Component {
 
 	render () {
 		return (
-			<canvas
-				id={this.props.canvasId}
-				width={this.props.canvasWidth}
-				height={this.props.canvasHeight}
-				className={classNames(styles.canvasrenderer)}
-			/>
+			<Rnd
+				default={{
+					x: 0,
+					y: 0,
+					width: this.state.canvasWidth,
+					height: this.state.canvasHeight
+				}}
+				bounds='parent'
+				className={styles.canvasRenderer}
+				resizeGrid={[64, 64]}
+				onDragStart={ () => {
+					this._canvasRendererModule.renderStop()
+				}}
+				onDragStop={ (event, direction, refToElement, delta) => {
+					this._canvasRendererModule.renderStart()
+				}}
+				onResizeStart={ () => {
+					this._canvasRendererModule.renderStop()
+				}}
+				onResizeStop={ (event, direction, refToElement, delta) => {
+					this._updateCanvasRendererSize(delta)
+					this._canvasRendererModule.renderStart()
+				}}
+			>
+				<canvas
+					id={this.props.canvasId}
+					width={this.state.canvasWidth}
+					height={this.state.canvasHeight}
+					className={classNames(styles.canvasObj)}
+				/>
+			</Rnd>
 		)
 	}
 

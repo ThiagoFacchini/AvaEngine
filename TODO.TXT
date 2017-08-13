@@ -1,0 +1,11 @@
+TODO 
+
+- Make the canvas resizable ( based on tile width x tile height steps ) / draggable constrained by the main view ( no scroll )
+- Add a canvas border to the canvasRenderer wrapper or resizable wrapper?
+- render a map bigger than the screen based on a given position with a given buffer
+- hover a particular map cell
+- click a particular map cell
+--------
+think about window events: how resize interact with the canvas object
+think about map mode ( play / edit )?
+

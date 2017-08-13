@@ -118,7 +118,7 @@ export class HomePage extends React.Component {
 	constructor (props: Object) {
 		super(props)
 
-		this._map = this._genRandomMap(10, 10)
+		this._map = this._genRandomMap(30, 30)
 	}
 	// --------------------------------------------------------
 
@@ -131,30 +131,23 @@ export class HomePage extends React.Component {
 		console.log(styles.dragHandler)
 		return (
       <div className={classNames(styles.homepage, styles[this.props.selectorTheme], styles[this.props.selectorBrowsingDevice])}>
-				<Rnd
-					default={{x: 0,	y: 0, width: 640, height: 480}}
-					bounds='parent'
-					dragHandlerClassName='.cu'
-				>
-					<div className={classNames('cu', styles.dragHandler)}></div>
-					<CanvasRenderer
-						// General Definitions
-						canvasWidth={640}
-						canvasHeight={480}
-						// Map Definitions
-						mapRows={this._map.rows}
-						mapCols={this._map.cols}
-						// Base map layer
-						groundLevelMap={this._map.groundMapLayer}
-						groundLevelAssets={assets.materials.groundlevel}
-						// Player Related
-						centerPosX={1}
-						centerPosY={1}
-						// Debug Options
-						debugDisplayCoordinates={true}
-						debugDisplayFPS={true}
-					/>
-			</Rnd>
+				<CanvasRenderer
+					// General Definitions
+					canvasWidth={640}
+					canvasHeight={512}
+					// Map Definitions
+					mapRows={this._map.rows}
+					mapCols={this._map.cols}
+					// Base map layer
+					groundLevelMap={this._map.groundMapLayer}
+					groundLevelAssets={assets.materials.groundlevel}
+					// Player Related
+					centerPosX={1}
+					centerPosY={1}
+					// Debug Options
+					debugDisplayCoordinates={false}
+					debugDisplayFPS={true}
+				/>
 			</div>
 		)
 	}

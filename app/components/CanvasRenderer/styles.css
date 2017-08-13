@@ -1,9 +1,21 @@
 @import '../../styles/themesManager.css';
 
-.canvasrenderer {
-	position: relative;
-	display: block;
-	top: 0;
-	left: 0;
+.canvasRenderer {
+	border: 7px solid transparent;
+	border-image: url(./assets/frame.png) 7 repeat;
+	border-image-slice: 7 7 7 7;
+	border-image-width: 7px 7px 7px 7px;
+	border-image-outset: 0 0 0 0;
+	overflow: hidden;
 	background-color: #000;
+
+	& .canvasObj {
+		position: relative;
+		display: block;
+		background-color: #000;
+
+		&.hiddenCanvas {
+			display: none;
+		}
+	}
 }

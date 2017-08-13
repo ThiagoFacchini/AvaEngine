@@ -83,6 +83,10 @@ export default function CanvasRendererModule () {
 
 			// Stopping the timer which resets currentFPSCount & currentFPSCapacity
 			// every second.
+			this.props.stats.lastFPSCount = 0
+			this.props.stats.currentFPSCount = 0
+			this.props.stats.lastFPSCapacity = 0
+			this.props.stats.currentFPSCapacity = 0
 			clearInterval(this.props.stats.statisticsTimer)
 		},
 
